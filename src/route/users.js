@@ -2,6 +2,37 @@ const express = require("express");
 const router = express.Router();
 const _= require("lodash");
 
+const Sequelize = require("sequelize");
+const sequelize = new Sequelize("node_example", "root", "1234", { host: "localhost", dialect: "mysql" });
+
+const check_sequelize_auth = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log("연결 성공");
+    } catch(err) {
+        console.log("연결 실패: ", err);
+    }
+};
+
+check_sequelize_auth();
+
+const User = sequelize.define("user", {
+    name: {
+        type: Sequelize.STRING,
+        allowNull: false
+    }
+});
+
+User.sync({ force: true}).then(()=>{
+    return User.create({
+        name: "홍길동"
+    });
+}).then(()=>{
+    return User.create({
+        name: "김철수"
+    });
+});
+
 let users = [];
 
 router.get("/", (req, res) => {
