@@ -20,73 +20,99 @@ const User = sequelize.define("user", {
     name: {
         type: Sequelize.STRING,
         allowNull: false
+    },
+    address: {
+        type: Sequelize.STRING,
+        allowNull: false
     }
 });
 
 User.sync({ force: true}).then(()=>{
     return User.create({
-        name: "홍길동"
+        name: "홍길동",
+        address: "Seoul"
     });
 }).then(()=>{
     return User.create({
-        name: "김철수"
+        name: "김철수",
+        address: "Gwangmyeong"
     });
 });
 
 let users = [];
 
-router.get("/", (req, res) => {
-    let msg = "유저가 존재하지 않습니다.";
-    if (users.length > 0) {
-        msg = users.length + "명의 유저가 존재합니다.";
-    }
-    res.send({msg, result: users});
+router.get("/", async(req, res) => {
+    let result = await User.findAll({
+        attributes: ["name"],
+        where: {
+            address: "Seoul"
+        }
+    });
+    res.send(result);
 });
 
-router.get("/:id", (req, res) => {
-    let msg = "id가 " + req.params.id + "인 유저가 존재하지 않습니다.";
-    let user = _.find(users, ["id", parseInt(req.params.id)]);
-    if (user) {
-        msg = "성공적으로 조회하였습니다.";
-    }
-    res.send({msg, result: user});
+router.get("/address/:address", async(req, res) => {
+    let result = await User.findAll({
+        where: {
+            address: req.params.address
+        }
+    });
+    res.send(result);
 });
 
-router.post("/", (req, res) => {
-    const check_user = _.find(users, ["id", req.body.id]);
-    let msg = req.body.id + " 아이디를 가진 유저가 이미 있습니다.";
-    let success = false;
-    if (!check_user) {
-        users.push(req.body);
-        msg = req.body.name + " 유저가 추가되었습니다.";
-        success = true;
-    }
-    res.send({msg, success});
+router.get("/:id", async(req, res) => {
+    let result = await User.findOne({
+        where: {
+            id: req.params.id 
+        }
+    });
+    res.send(result);
 });
 
-router.put("/:id", (req, res) => {
-    let check_user = _.find(users, ["id", parseInt(req.params.id)]);
-    let msg = req.params.id + " 아이디를 가진 유저가 존재하지 않습니다.";
-    if (check_user) {
-        users = users.map(entry => {
-            if(entry.id ===parseInt(req.params.id)) {
-                entry.name = req.body.name;
-            }
-            return entry;
-        });
-        msg = "성공적으로 수행되었습니다.";
+router.post("/", async(req, res) => {
+    let result = false;
+    try {
+        await User.create({id: req.body.id, name: req.body.name, address: req.body.address});
+        result = true;
+    } catch(err) {
+        console.log(err);
     }
-    res.send({msg});
+    res.send(result);
 });
 
-router.delete("/:id", (req, res) => {
-    let check_user = _.find(users, ["id", parseInt(req.params.id)]);
-    let msg = req.params.id + " 아이디를 가진 유저가 존재하지 않습니다.";
-    if (check_user) {
-        msg = "성공적으로 삭제되었습니다";
-        users = _.reject(users, ["id", parseInt(req.params.id)]);
+router.put("/:id", async(req, res) => {
+    let result = false;
+    try {
+        await User.update({
+            name: req.body.name,
+            address: req.body.address
+        }, {
+            where: {
+            id: req.params.id
+            }  
+        }
+        );
+        result = true;
+    } catch(err) {
+        console.log(err);
     }
-    res.send({msg});
+    res.send(result);
+});
+
+router.delete("/:id", async(req, res) => {
+    let result = false;
+    try {
+        await User.destroy({
+            where: {
+                id: req.params.id
+            }  
+        }
+        );
+        result = true;
+    } catch(err) {
+        console.log(err);
+    }
+    res.send(result);
 });
 
 module.exports = router;
