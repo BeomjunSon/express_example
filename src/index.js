@@ -9,8 +9,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/users", user_route);
 app.use("/boards", board_route);
 
-models.sequelize.sync().then(() => {
-    app.listen(3000);
+models.sequelize.query("SET FOREIGN_KEY_CHECKS = 0", {raw: true}).then(() => {
+    models.sequelize.sync({force: true}).then(() => {
+        app.listen(3000);
+    });
 });
 
 let users = [{
@@ -25,4 +27,3 @@ let user = null;
 app.get("/", (req, res) => {
     res.send("test");
 });
-
