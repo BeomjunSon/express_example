@@ -1,21 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const models = require("../models");
+const User = models.user;
 const _= require("lodash");
 
-const Sequelize = require("sequelize");
-const sequelize = new Sequelize("node_example", "root", "1234", { host: "localhost", dialect: "mysql" });
-
-const check_sequelize_auth = async () => {
-    try {
-        await sequelize.authenticate();
-        console.log("연결 성공");
-    } catch(err) {
-        console.log("연결 실패: ", err);
-    }
-};
-
-check_sequelize_auth();
-
+/*
 const User = sequelize.define("user", {
     name: {
         type: Sequelize.STRING,
@@ -40,6 +29,7 @@ User.sync({ force: true}).then(()=>{
 });
 
 let users = [];
+*/
 
 router.get("/", async(req, res) => {
     let result = await User.findAll({

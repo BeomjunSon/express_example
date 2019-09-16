@@ -2,13 +2,16 @@ const express = require("express");
 const app = express();
 const user_route = require("./route/users");
 const board_route = require("./route/boards");
+const models = require("./models");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/users", user_route);
 app.use("/boards", board_route);
 
-app.listen(3000);
+models.sequelize.sync().then(() => {
+    app.listen(3000);
+});
 
 let users = [{
     id: 1,
