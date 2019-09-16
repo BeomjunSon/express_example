@@ -1,20 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const models = require("../models");
+const Board = models.board;
 
-const Sequelize = require("sequelize");
-const sequelize = new Sequelize("node_example", "root", "1234", { host: "localhost", dialect: "mysql" });
-
-const check_sequelize_auth = async () => {
-    try {
-        await sequelize.authenticate();
-        console.log("연결 성공");
-    } catch (err) {
-        console.log("연결 실패 ", err);
-    }
-};
-
-check_sequelize_auth();
-
+/*
 const Board = sequelize.define("boards", {
     title: {
         type: Sequelize.STRING,
@@ -45,6 +34,7 @@ Board.sync({ force: true }).then(() => {
         viewCount: 0
     });
 });
+*/
 
 router.get("/", async(req, res) => {
     let result = await Board.findAll({
