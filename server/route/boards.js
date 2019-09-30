@@ -1,26 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const models = require("../models");
+
 const Board = models.board;
 
-/*
-const Board = sequelize.define("boards", {
-    title: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    content: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    viewCount: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-        allowNull: false
-    }
-});
-
 // Example data
+/*
 Board.sync({ force: true }).then(() => {
     return Board.create({
         title: "게시글 테스트",
@@ -33,8 +18,7 @@ Board.sync({ force: true }).then(() => {
         content: "반가웡",
         viewCount: 0
     });
-});
-*/
+});*/
 
 router.get("/", async(req, res) => {
     let result = await Board.findAll({

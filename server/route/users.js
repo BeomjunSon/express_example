@@ -1,42 +1,28 @@
 const express = require("express");
 const router = express.Router();
+//const _ = require("lodash");
 const models = require("../models");
+
 const User = models.user;
-const _= require("lodash");
+const Board = models.board;
 
-/*
-const User = sequelize.define("user", {
-    name: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    address: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-});
-
-User.sync({ force: true}).then(()=>{
+// Example data
+/*User.sync({ force: true }).then(() => {
     return User.create({
         name: "홍길동",
-        address: "Seoul"
+        address: "seoul"
     });
-}).then(()=>{
+}).then(() => {
     return User.create({
         name: "김철수",
-        address: "Gwangmyeong"
+        address: "anyang"
     });
-});
-
-let users = [];
-*/
+});*/
 
 router.get("/", async(req, res) => {
     let result = await User.findAll({
-        attributes: ["name"],
-        where: {
-            address: "Seoul"
-        }
+        //attributes: ["name"],
+        include:[Board]
     });
     res.send(result);
 });
@@ -53,7 +39,7 @@ router.get("/address/:address", async(req, res) => {
 router.get("/:id", async(req, res) => {
     let result = await User.findOne({
         where: {
-            id: req.params.id 
+            id: req.params.id
         }
     });
     res.send(result);
@@ -62,11 +48,11 @@ router.get("/:id", async(req, res) => {
 router.post("/", async(req, res) => {
     let result = false;
     try {
-        await User.create({id: req.body.id, name: req.body.name, address: req.body.address});
-        await User.setBoard({name: "Test"});
+        let result_user = await User.create({id: req.body.id, name: req.body.name, address: req.body.address});
+        await result_user.createBoard({title: "Test", content: "testtest", viewCount: 0});
         result = true;
     } catch(err) {
-        console.log(err);
+        console.error(err);
     }
     res.send(result);
 });
@@ -74,34 +60,38 @@ router.post("/", async(req, res) => {
 router.put("/:id", async(req, res) => {
     let result = false;
     try {
-        await User.update({
-            name: req.body.name,
-            address: req.body.address
-        }, {
-            where: {
-            id: req.params.id
-            }  
-        }
+        await User.update(
+            {
+                name: req.body.name,
+                address: req.body.address
+            },
+            {
+                where: {
+                    id: req.params.id
+                }
+            }
         );
         result = true;
-    } catch(err) {
-        console.log(err);
+    } catch (err) {
+        console.error(err);
     }
+
     res.send(result);
 });
 
 router.delete("/:id", async(req, res) => {
     let result = false;
     try {
-        await User.destroy({
-            where: {
-                id: req.params.id
-            }  
-        }
+        await User.destroy(
+            {
+                where: {
+                    id: req.params.id
+                }
+            }
         );
         result = true;
-    } catch(err) {
-        console.log(err);
+    } catch (err) {
+        console.error(err);
     }
     res.send(result);
 });

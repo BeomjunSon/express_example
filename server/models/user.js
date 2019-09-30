@@ -1,13 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
 
     const User = sequelize.define("user", {
-        name : {
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        address: {
             type: DataTypes.STRING,
             allowNull: false
         }
     });
+
     User.associate = function(models) {
-        models.user.hasOne(models.board);
+        models.user.belongsTo(models.board);
     };
     return User;
 };
